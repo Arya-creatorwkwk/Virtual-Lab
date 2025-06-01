@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Lab Asam Basa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><rect width="1000" height="600" fill="%23e8f4f8"/><circle cx="200" cy="150" r="80" fill="%23b3d9ff" opacity="0.6"/><circle cx="800" cy="200" r="100" fill="%2387ceeb" opacity="0.5"/><rect x="150" y="250" width="100" height="150" fill="%23ddd" rx="10"/><rect x="750" y="300" width="100" height="120" fill="%23ddd" rx="10"/></svg>');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            padding: 30px 0;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(145deg, #4a90e2, #357abd);
+            color: white;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            min-width: 200px;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(145deg, #357abd, #2a5f8f);
+        }
+
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .sub-nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .sub-btn {
+            background: #f0f8ff;
+            border: 2px solid #4a90e2;
+            color: #4a90e2;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sub-btn:hover, .sub-btn.active {
+            background: #4a90e2;
+            color: white;
+        }
+
+        .material-content {
+            line-height: 1.6;
+        }
+
+        .material-content h3 {
+            color: #2c5aa0;
+            margin: 20px 0 10px 0;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 5px;
+        }
+
+        .highlight {
+            background: #fffacd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .lab-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .solution-selector, .tool-selector {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 250px;
+        }
+
+        .solution-item, .tool-item {
+            background: #e3f2fd;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .solution-item:hover, .tool-item:hover {
+            background: #bbdefb;
+            transform: translateX(5px);
+        }
+
+        .solution-item.selected, .tool-item.selected {
+            background: #2196f3;
+            color: white;
+        }
+
+        .beaker {
+            width: 150px;
+            height: 200px;
+            border: 4px solid #666;
+            border-radius: 0 0 75px 75px;
+            position: relative;
+            margin: 20px auto;
+            background: #lightblue;
+            transition: background 0.5s ease;
+        }
+
+        .solution {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            border-radius: 0 0 67px 67px;
+            background: lightblue;
+            transition: all 0.5s ease;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #4a90e2;
+        }
+
+        .options {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .options li {
+            margin: 10px 0;
+            padding: 10px;
+            background: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .options li:hover {
+            background: #e3f2fd;
+        }
+
+        .options li.selected {
+            background: #2196f3;
+            color: white;
+        }
+
+        .options li.correct {
+            background: #4caf50;
+            color: white;
+        }
+
+        .options li.incorrect {
+            background: #f44336;
+            color: white;
+        }
+
+        .submit-btn, .back-btn {
+            background: #4a90e2;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 1em;
+        }
+
+        .submit-btn:hover, .back-btn:hover {
+            background: #357abd;
+        }
+
+        .score-display {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .ph-meter {
+            background: #333;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .animation-box {
+            background: #f0f8ff;
+            border: 2px dashed #4a90e2;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .main-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .lab-container {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Virtual Lab Asam Basa 🧪</h1>
+            <p>Laboratorium Virtual Interaktif untuk Pembelajaran Asam Basa</p>
+        </div>
+
+        <div class="main-nav">
+            <button class="nav-btn" onclick="showSection('materi')">📚 Materi Asam Basa</button>
+            <button class="nav-btn" onclick="showSection('percobaan')">🧪 Percobaan Virtual</button>
+            <button class="nav-btn" onclick="showSection('latihan')">✍️ Soal Latihan</button>
+        </div>
+
+        <!-- Materi Section -->
+        <div id="materi" class="content-section">
+            <h2>📚 Materi Asam Basa</h2>
+            <div class="sub-nav">
+                <button class="sub-btn active" onclick="showMaterial('konsep')">Konsep Dasar</button>
+                <button class="sub-btn" onclick="showMaterial('teori')">Teori-Teori</button>
+                <button class="sub-btn" onclick="showMaterial('sifat')">Sifat-Sifat</button>
+                <button class="sub-btn" onclick="showMaterial('kekuatan')">Kekuatan Asam Basa</button>
+                <button class="sub-btn" onclick="showMaterial('kehidupan')">Dalam Kehidupan</button>
+            </div>
+
+            <div id="konsep" class="material-content">
+                <h3>Konsep Dasar Asam Basa</h3>
+                <p><span class="highlight">Asam</span> adalah zat yang dapat memberikan ion H⁺ (proton) dalam larutan air.</p>
+                <p><span class="highlight">Basa</span> adalah zat yang dapat menerima ion H⁺ atau memberikan ion OH⁻ dalam larutan air.</p>
+                
+                <h4>Indikator Asam Basa:</h4>
+                <ul>
+                    <li><strong>Indikator Alami:</strong> Kunyit, kubis ungu, bunga sepatu</li>
+                    <li><strong>Indikator Buatan:</strong> Kertas lakmus, fenolftalein, metil jingga</li>
+                </ul>
+                
+                <h4>Skala pH dan pOH:</h4>
+                <p>pH = -log [H⁺], pOH = -log [OH⁻]</p>
+                <p>pH + pOH = 14 (pada suhu 25°C)</p>
+                <div class="animation-box">
+                    <p>pH < 7: Asam | pH = 7: Netral | pH > 7: Basa</p>
+                </div>
+            </div>
+
+            <div id="teori" class="material-content" style="display:none;">
+                <h3>Teori-Teori Asam Basa</h3>
+                
+                <h4>1. Teori Arrhenius</h4>
+                <p>Asam: menghasilkan ion H⁺ dalam air</p>
+                <p>Basa: menghasilkan ion OH⁻ dalam air</p>
+                <div class="animation-box">
+                    <p>HCl → H⁺ + Cl⁻ | NaOH → Na⁺ + OH⁻</p>
+                </div>
+                
+                <h4>2. Teori Brønsted-Lowry</h4>
+                <p>Asam: donor proton (H⁺)</p>
+                <p>Basa: akseptor proton (H⁺)</p>
+                <div class="animation-box">
+                    <p>NH₃ + H₂O → NH₄⁺ + OH⁻</p>
+                </div>
+                
+                <h4>3. Teori Lewis</h4>
+                <p>Asam: akseptor pasangan elektron</p>
+                <p>Basa: donor pasangan elektron</p>
+                <div class="animation-box">
+                    <p>BF₃ + NH₃ → BF₃-NH₃</p>
+                </div>
+            </div>
+
+            <div id="sifat" class="material-content" style="display:none;">
+                <h3>Sifat-Sifat Asam Basa</h3>
+                
+                <h4>Sifat Asam:</h4>
+                <ul>
+                    <li>Rasa masam (⚠️ jangan dicicipi di lab!)</li>
+                    <li>Korosif (merusak logam)</li>
+                    <li>Bereaksi dengan logam menghasilkan gas H₂</li>
+                    <li>Memerahkan kertas lakmus biru</li>
+                    <li>pH < 7</li>
+                </ul>
+                
+                <h4>Sifat Basa:</h4>
+                <ul>
+                    <li>Rasa pahit (⚠️ jangan dicicipi di lab!)</li>
+                    <li>Terasa licin di kulit</li>
+                    <li>Membirukan kertas lakmus merah</li>
+                    <li>pH > 7</li>
+                </ul>
+                
+                <h4>Reaksi Netralisasi:</h4>
+                <p>Asam + Basa → Garam + Air</p>
+                <div class="animation-box">
+                    <p>HCl + NaOH → NaCl + H₂O</p>
+                </div>
+            </div>
+
+            <div id="kekuatan" class="material-content" style="display:none;">
+                <h3>Kekuatan Asam Basa</h3>
+                
+                <h4>Asam Kuat (α ≈ 1):</h4>
+                <p>HCl, HNO₃, H₂SO₄, HBr, HI, HClO₄</p>
+                
+                <h4>Asam Lemah (α < 1):</h4>
+                <p>CH₃COOH, HF, HCN, H₂CO₃</p>
+                
+                <h4>Basa Kuat (α ≈ 1):</h4>
+                <p>NaOH, KOH, Ba(OH)₂, Ca(OH)₂</p>
+                
+                <h4>Basa Lemah (α < 1):</h4>
+                <p>NH₄OH, Al(OH)₃, Mg(OH)₂</p>
+                
+                <h4>Konstanta Ionisasi:</h4>
+                <p><span class="highlight">Ka</span> (konstanta ionisasi asam): semakin besar Ka, semakin kuat asam</p>
+                <p><span class="highlight">Kb</span> (konstanta ionisasi basa): semakin besar Kb, semakin kuat basa</p>
+            </div>
+
+            <div id="kehidupan" class="material-content" style="display:none;">
+                <h3>Contoh dalam Kehidupan Sehari-hari</h3>
+                
+                <h4>🍋 Contoh Asam:</h4>
+                <ul>
+                    <li><strong>Cuka:</strong> Mengandung asam asetat (CH₃COOH)</li>
+                    <li><strong>Jeruk:</strong> Mengandung asam sitrat</li>
+                    <li><strong>Lambung:</strong> Mengandung asam klorida (HCl)</li>
+                    <li><strong>Minuman bersoda:</strong> Mengandung asam karbonat</li>
+                </ul>
+                
+                <h4>🧼 Contoh Basa:</h4>
+                <ul>
+                    <li><strong>Sabun:</strong> Mengandung natrium hidroksida</li>
+                    <li><strong>Deterjen:</strong> Bersifat basa untuk membersihkan lemak</li>
+                    <li><strong>Obat maag:</strong> Antasida untuk menetralkan asam lambung</li>
+                    <li><strong>Pasta gigi:</strong> Basa lemah untuk membersihkan gigi</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Percobaan Section -->
+        <div id="percobaan" class="content-section">
+            <h2>🧪 Percobaan Virtual - Identifikasi Larutan Asam Basa</h2>
+            
+            <div class="lab-container">
+                <div class="solution-selector">
+                    <h3>Pilih Larutan:</h3>
+                    <div class="solution-item" onclick="selectSolution('HCl')" data-ph="1">HCl (Asam Klorida)</div>
+                    <div class="solution-item" onclick="selectSolution('NaOH')" data-ph="13">NaOH (Natrium Hidroksida)</div>
+                    <div class="solution-item" onclick="selectSolution('CH3COOH')" data-ph="3">CH₃COOH (Asam Asetat)</div>
+                    <div class="solution-item" onclick="selectSolution('NH4OH')" data-ph="11">NH₄OH (Amonium Hidroksida)</div>
+                    <div class="solution-item" onclick="selectSolution('Air')" data-ph="7">Air Murni</div>
+                    <div class="solution-item" onclick="selectSolution('Jeruk')" data-ph="2">Air Jeruk</div>
+                    <div class="solution-item" onclick="selectSolution('Sabun')" data-ph="12">Larutan Sabun</div>
+                    <div class="solution-item" onclick="selectSolution('Soda')" data-ph="4">Air Soda</div>
+                </div>
+
+                <div style="text-align: center;">
+                    <h3>Beaker Glass</h3>
+                    <div class="beaker">
+                        <div class="solution" id="solutionDisplay"></div>
+                    </div>
+                    <p id="solutionName">Pilih larutan untuk dimulai</p>
+                </div>
+
+                <div class="tool-selector">
+                    <h3>Pilih Alat:</h3>
+                    <div class="tool-item" onclick="selectTool('lakmus')">Kertas Lakmus</div>
+                    <div class="tool-item" onclick="selectTool('indikator')">Indikator Universal</div>
+                    <div class="tool-item" onclick="selectTool('ph-meter')">pH Meter Digital</div>
+                </div>
+            </div>
+
+            <div id="testResult" style="text-align: center; margin: 20px 0;">
+                <div id="lakmusTest" style="display: none;">
+                    <h4>Hasil Uji Kertas Lakmus:</h4>
+                    <div style="display: flex; justify-content: center; gap: 20px; margin: 10px 0;">
+                        <div>
+                            <p>Lakmus Merah:</p>
+                            <div id="lakmusRed" style="width: 50px; height: 20px; background: red; margin: 5px auto; border-radius: 3px;"></div>
+                        </div>
+                        <div>
+                            <p>Lakmus Biru:</p>
+                            <div id="lakmusBlue" style="width: 50px; height: 20px; background: blue; margin: 5px auto; border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="indicatorTest" style="display: none;">
+                    <h4>Hasil Uji Indikator:</h4>
+                    <select id="indicatorSelect" onchange="testIndicator()">
+                        <option value="">Pilih Indikator</option>
+                        <option value="fenolftalein">Fenolftalein</option>
+                        <option value="metil">Metil Jingga</option>
+                        <option value="bromtimol">Bromtimol Biru</option>
+                    </select>
+                    <div id="indicatorResult"></div>
+                </div>
+
+                <div id="phMeterTest" style="display: none;">
+                    <h4>Hasil Pengukuran pH:</h4>
+                    <div class="ph-meter" id="phDisplay">pH: --</div>
+                </div>
+
+                <div id="solutionInfo"></div>
+            </div>
+        </div>
+
+        <!-- Latihan Section -->
+        <div id="latihan" class="content-section">
+            <h2>✍️ Soal Latihan</h2>
+            
+            <div class="quiz-container">
+                <div id="scoreDisplay" class="score-display" style="display: none;">
+                    <p>Skor Anda: <span id="score">0</span>/20</p>
+                </div>
+
+                <div id="quizContent">
+                    <div id="questionContainer"></div>
+                    <button class="submit-btn" id="submitQuiz" onclick="submitQuiz()" style="display: none;">Kirim Jawaban</button>
+                    <button class="back-btn" onclick="resetQuiz()" style="display: none;" id="resetBtn">Ulangi Kuis</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSolution = null;
+        let currentTool = null;
+        let quizAnswers = {};
+        let currentQuestions = [];
+
+        // Data soal kuis
+        const quizData = [
+            {
+                question: "Menurut teori Arrhenius, asam adalah zat yang dapat...",
+                options: [
+                    "Melepaskan ion H⁺ dalam larutan air",
+                    "Menerima pasangan elektron",
+                    "Melepaskan ion OH⁻ dalam larutan air",
+                    "Menerima ion H⁺ dalam larutan air",
+                    "Memberikan pasangan elektron"
+                ],
+                correct: 0,
+                explanation: "Menurut teori Arrhenius, asam adalah zat yang dapat melepaskan atau menghasilkan ion H⁺ (proton) ketika dilarutkan dalam air."
+            },
+            {
+                question: "Nilai pH larutan yang bersifat netral adalah...",
+                options: ["6", "7", "8", "9", "10"],
+                correct: 1,
+                explanation: "Larutan netral memiliki pH = 7, dimana konsentrasi ion H⁺ sama dengan konsentrasi ion OH⁻."
+            },
+            {
+                question: "Contoh asam kuat adalah...",
+                options: ["CH₃COOH", "HF", "HCl", "H₂CO₃", "HCN"],
+                correct: 2,
+                explanation: "HCl (asam klorida) adalah asam kuat karena terionisasi sempurna dalam larutan air (α ≈ 1)."
+            },
+            {
+                question: "Kertas lakmus merah akan berubah menjadi biru jika dicelupkan ke dalam larutan...",
+                options: ["Asam", "Netral", "Basa", "Garam", "Buffer"],
+                correct: 2,
+                explanation: "Kertas lakmus merah akan berubah menjadi biru ketika dicelupkan dalam larutan basa (pH > 7)."
+            },
+            {
+                question: "Rumus untuk menghitung pH adalah...",
+                options: ["pH = log [H⁺]", "pH = -log [H⁺]", "pH = [H⁺]", "pH = -[H⁺]", "pH = 1/[H⁺]"],
+                correct: 1,
+                explanation: "pH didefinisikan sebagai negatif logaritma dari konsentrasi ion hidrogen: pH = -log [H⁺]."
+            },
+            {
+                question: "Menurut teori Brønsted-Lowry, basa adalah...",
+                options: [
+                    "Donor elektron",
+                    "Akseptor elektron", 
+                    "Donor proton",
+                    "Akseptor proton",
+                    "Penghasil ion OH⁻"
+                ],
+                correct: 3,
+                explanation: "Menurut teori Brønsted-Lowry, basa adalah zat yang dapat menerima atau mengaksi proton (H⁺)."
+            },
+            {
+                question: "Pada suhu 25°C, hubungan antara pH dan pOH adalah...",
+                options: ["pH × pOH = 14", "pH + pOH = 14", "pH - pOH = 14", "pH / pOH = 14", "pH = pOH"],
+                correct: 1,
+                explanation: "Pada suhu 25°C, berlaku hubungan pH + pOH = 14, yang berasal dari konstanta ionisasi air Kw = 10⁻¹⁴."
+            },
+            {
+                question: "Indikator fenolftalein akan berwarna merah muda dalam larutan...",
+                options: ["Asam kuat", "Asam lemah", "Netral", "Basa", "Garam"],
+                correct: 3,
+                explanation: "Fenolftalein tidak berwarna dalam larutan asam dan netral, tetapi berwarna merah muda dalam larutan basa."
+            },
+            {
+                question: "Cuka dapur mengandung asam...",
+                options: ["Sitrat", "Tartrat", "Asetat", "Formiat", "Laktat"],
+                correct: 2,
+                explanation: "Cuka dapur mengandung asam asetat (CH₃COOH) dengan konsentrasi sekitar 3-5%."
+            },
+            {
+                question: "Larutan dengan pH 3 memiliki konsentrasi ion H⁺ sebesar...",
+                options: ["3 M", "10⁻³ M", "0,3 M", "10³ M", "30 M"],
+                correct: 1,
+                explanation: "Jika pH = 3, maka [H⁺] = 10⁻³ M, karena pH = -log [H⁺]."
+            },
+            {
+                question: "Pasangan asam-basa konjugasi dari NH₃/NH₄⁺ adalah...",
+                options: [
+                    "NH₃ adalah asam, NH₄⁺ adalah basa konjugasinya",
+                    "NH₃ adalah basa, NH₄⁺ adalah asam konjugasinya", 
+                    "Keduanya adalah asam",
+                    "Keduanya adalah basa",
+                    "Tidak ada hubungan konjugasi"
+                ],
+                correct: 1,
+                explanation: "NH₃ bertindak sebagai basa (menerima proton) dan NH₄⁺ adalah asam konjugasinya (dapat memberikan proton)."
+            },
+            {
+                question: "Antasida bekerja dengan cara...",
+                options: [
+                    "Menurunkan pH lambung",
+                    "Meningkatkan produksi asam lambung",
+                    "Menetralkan asam lambung berlebih",
+                    "Meningkatkan pH darah",
+                    "Mengurangi produksi enzim"
+                ],
+                correct: 2,
+                explanation: "Antasida mengandung basa lemah yang menetralkan kelebihan asam lambung (HCl) untuk mengurangi rasa perih."
+            },
+            {
+                question: "Larutan buffer adalah larutan yang...",
+                options: [
+                    "Selalu bersifat asam",
+                    "Selalu bersifat basa", 
+                    "Dapat mempertahankan pH relatif tetap",
+                    "Memiliki pH = 7",
+                    "Tidak dapat diukur pH-nya"
+                ],
+                correct: 2,
+                explanation: "Larutan buffer dapat mempertahankan pH relatif tetap meskipun ditambah sedikit asam atau basa."
+            },
+            {
+                question: "Konstanta ionisasi asam (Ka) yang besar menunjukkan bahwa asam tersebut...",
+                options: ["Lemah", "Kuat", "Netral", "Buffer", "Tidak dapat ditentukan"],
+                correct: 1,
+                explanation: "Ka yang besar menunjukkan derajat ionisasi yang tinggi, yang berarti asam tersebut adalah asam kuat."
+            },
+            {
+                question: "Reaksi netralisasi selalu menghasilkan...",
+                options: ["Asam dan air", "Basa dan air", "Garam dan air", "Gas dan air", "Ion dan air"],
+                correct: 2,
+                explanation: "Reaksi netralisasi antara asam dan basa selalu menghasilkan garam dan air: Asam + Basa → Garam + Air."
+            },
+            {
+                question: "pH air hujan yang normal berkisar antara...",
+                options: ["3,0 - 4,0", "5,6 - 6,0", "7,0 - 7,5", "8,0 - 8,5", "9,0 - 9,5"],
+                correct: 1,
+                explanation: "Air hujan normal memiliki pH sekitar 5,6 karena adanya CO₂ di atmosfer yang membentuk asam karbonat lemah."
+            },
+            {
+                question: "Sabun bersifat basa karena...",
+                options: [
+                    "Dibuat dari asam lemak",
+                    "Mengandung natrium atau kalium hidroksida",
+                    "Dapat membersihkan kotoran",
+                    "Berbusa di air",
+                    "Larut dalam air"
+                ],
+                correct: 1,
+                explanation: "Sabun dibuat melalui saponifikasi yang melibatkan NaOH atau KOH, sehingga menghasilkan produk yang bersifat basa."
+            },
+            {
+                question: "Indikator universal berguna untuk...",
+                options: [
+                    "Menentukan jenis asam",
+                    "Menentukan jenis basa",
+                    "Mengukur konsentrasi larutan",
+                    "Memperkirakan nilai pH larutan",
+                    "Menentukan titik didih larutan"
+                ],
+                correct: 3,
+                explanation: "Indikator universal memberikan perubahan warna yang berbeda pada rentang pH yang luas, sehingga dapat memperkirakan nilai pH."
+            },
+            {
+                question: "Gas yang dihasilkan ketika logam seng bereaksi dengan asam klorida adalah...",
+                options: ["Oksigen", "Hidrogen", "Klorin", "Karbon dioksida", "Nitrogen"],
+                correct: 1,
+                explanation: "Reaksi Zn + 2HCl → ZnCl₂ + H₂ menghasilkan gas hidrogen (H₂)."
+            },
+            {
+                question: "Larutan yang memiliki pH = 12 bersifat...",
+                options: ["Asam kuat", "Asam lemah", "Netral", "Basa lemah", "Basa kuat"],
+                correct: 4,
+                explanation: "pH = 12 menunjukkan [OH⁻] yang tinggi dan [H⁺] yang sangat rendah, karakteristik larutan basa kuat."
+            }
+        ];
+
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(section).classList.add('active');
+            
+            // Initialize quiz if latihan section is selected
+            if (section === 'latihan') {
+                initializeQuiz();
+            }
+        }
+
+        function showMaterial(material) {
+            // Hide all material content
+            document.querySelectorAll('.material-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Remove active class from all sub buttons
+            document.querySelectorAll('.sub-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected material
+            document.getElementById(material).style.display = 'block';
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function selectSolution(solution) {
+            currentSolution = solution;
+            
+            // Remove selected class from all solutions
+            document.querySelectorAll('.solution-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked solution
+            event.target.classList.add('selected');
+            
+            // Update beaker display
+            const solutionDisplay = document.getElementById('solutionDisplay');
+            const solutionName = document.getElementById('solutionName');
+            
+            solutionName.textContent = `Larutan: ${solution}`;
+            
+            // Change solution color based on type
+            if (solution === 'Jeruk') {
+                solutionDisplay.style.background = '#ffeb3b';
+            } else {
+                solutionDisplay.style.background = 'lightblue';
+            }
+            
+            // Clear previous test results
+            clearTestResults();
+        }
+
+        function selectTool(tool) {
+            currentTool = tool;
+            
+            // Remove selected class from all tools
+            document.querySelectorAll('.tool-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked tool
+            event.target.classList.add('selected');
+            
+            // Perform test if both solution and tool are selected
+            if (currentSolution && currentTool) {
+                performTest();
+            }
+        }
+
+        function clearTestResults() {
+            document.getElementById('lakmusTest').style.display = 'none';
+            document.getElementById('indicatorTest').style.display = 'none';
+            document.getElementById('phMeterTest').style.display = 'none';
+            document.getElementById('solutionInfo').innerHTML = '';
+        }
+
+        function performTest() {
+            clearTestResults();
+            
+            const ph = getSolutionPH(currentSolution);
+            
+            switch(currentTool) {
+                case 'lakmus':
+                    testLakmus(ph);
+                    break;
+                case 'indikator':
+                    showIndicatorTest();
+                    break;
+                case 'ph-meter':
+                    testPHMeter(ph);
+                    break;
+            }
+            
+            showSolutionInfo(ph);
+        }
+
+        function getSolutionPH(solution) {
+            const phValues = {
+                'HCl': 1,
+                'NaOH': 13,
+                'CH3COOH': 3,
+                'NH4OH': 11,
+                'Air': 7,
+                'Jeruk': 2,
+                'Sabun': 12,
+                'Soda': 4
+            };
+            return phValues[solution] || 7;
+        }
+
+        function testLakmus(ph) {
+            document.getElementById('lakmusTest').style.display = 'block';
+            
+            const lakmusRed = document.getElementById('lakmusRed');
+            const lakmusBlue = document.getElementById('lakmusBlue');
+            
+            if (ph < 7) {
+                // Acidic
+                lakmusRed.style.background = 'red';
+                lakmusBlue.style.background = 'red';
+            } else if (ph > 7) {
+                // Basic
+                lakmusRed.style.background = 'blue';
+                lakmusBlue.style.background = 'blue';
+            } else {
+                // Neutral
+                lakmusRed.style.background = 'red';
+                lakmusBlue.style.background = 'blue';
+            }
+        }
+
+        function showIndicatorTest() {
+            document.getElementById('indicatorTest').style.display = 'block';
+        }
+
+        function testIndicator() {
+            const indicator = document.getElementById('indicatorSelect').value;
+            const ph = getSolutionPH(currentSolution);
+            const result = document.getElementById('indicatorResult');
+            
+            if (!indicator) return;
+            
+            let color = '';
+            let info = '';
+            
+            switch(indicator) {
+                case 'fenolftalein':
+                    if (ph >= 8.3) {
+                        color = '#ff69b4';
+                        info = 'Merah muda';
+                    } else {
+                        color = 'transparent';
+                        info = 'Tidak berwarna';
+                    }
+                    break;
+                case 'metil':
+                    if (ph <= 3.1) {
+                        color = '#ff0000';
+                        info = 'Merah';
+                    } else if (ph >= 4.4) {
+                        color = '#ffff00';
+                        info = 'Kuning';
+                    } else {
+                        color = '#ffa500';
+                        info = 'Jingga';
+                    }
+                    break;
+                case 'bromtimol':
+                    if (ph <= 6.0) {
+                        color = '#ffff00';
+                        info = 'Kuning';
+                    } else if (ph >= 7.6) {
+                        color = '#0000ff';
+                        info = 'Biru';
+                    } else {
+                        color = '#00ff00';
+                        info = 'Hijau';
+                    }
+                    break;
+            }
+            
+            result.innerHTML = `
+                <div style="margin: 10px 0;">
+                    <div style="width: 50px; height: 30px; background: ${color}; border: 1px solid #333; margin: 5px auto; border-radius: 5px;"></div>
+                    <p>Warna: ${info}</p>
+                </div>
+            `;
+        }
+
+        function testPHMeter(ph) {
+            document.getElementById('phMeterTest').style.display = 'block';
+            document.getElementById('phDisplay').textContent = `pH: ${ph.toFixed(1)}`;
+        }
+
+        function showSolutionInfo(ph) {
+            let sifat = '';
+            if (ph < 7) sifat = 'ASAM';
+            else if (ph > 7) sifat = 'BASA';
+            else sifat = 'NETRAL';
+            
+            document.getElementById('solutionInfo').innerHTML = `
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <h4>Informasi Larutan:</h4>
+                    <p><strong>${currentSolution}</strong> bersifat <strong>${sifat}</strong></p>
+                    <p>pH: ${ph}</p>
+                </div>
+            `;
+        }
+
+        function initializeQuiz() {
+            currentQuestions = [...quizData];
+            quizAnswers = {};
+            displayQuestions();
+        }
+
+        function displayQuestions() {
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = '';
+            
+            currentQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <h4>Soal ${index + 1}</h4>
+                    <p>${q.question}</p>
+                    <ul class="options">
+                        ${q.options.map((option, optIndex) => 
+                            `<li onclick="selectAnswer(${index}, ${optIndex})" data-question="${index}" data-option="${optIndex}">
+                                ${String.fromCharCode(65 + optIndex)}. ${option}
+                            </li>`
+                        ).join('')}
+                    </ul>
+                `;
+                container.appendChild(questionDiv);
+            });
+            
+            document.getElementById('submitQuiz').style.display = 'block';
+            document.getElementById('scoreDisplay').style.display = 'none';
+            document.getElementById('resetBtn').style.display = 'none';
+        }
+
+        function selectAnswer(questionIndex, optionIndex) {
+            quizAnswers[questionIndex] = optionIndex;
+            
+            // Remove selected class from all options in this question
+            document.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            document.querySelector(`[data-question="${questionIndex}"][data-option="${optionIndex}"]`).classList.add('selected');
+        }
+
+        function submitQuiz() {
+            // Check if all questions are answered
+            if (Object.keys(quizAnswers).length < currentQuestions.length) {
+                alert('Harap jawab semua soal sebelum mengirim!');
+                return;
+            }
+            
+            let score = 0;
+            
+            // Check answers and apply styling
+            currentQuestions.forEach((q, index) => {
+                const userAnswer = quizAnswers[index];
+                const correctAnswer = q.correct;
+                
+                if (userAnswer === correctAnswer) {
+                    score++;
+                }
+                
+                // Apply styling to show correct/incorrect answers
+                document.querySelectorAll(`[data-question="${index}"]`).forEach((option, optIndex) => {
+                    option.classList.remove('selected');
+                    
+                    if (optIndex === correctAnswer) {
+                        option.classList.add('correct');
+                    } else if (optIndex === userAnswer && userAnswer !== correctAnswer) {
+                        option.classList.add('incorrect');
+                    }
+                    
+                    // Remove click functionality
+                    option.onclick = null;
+                });
+                
+                // Add explanation
+                const questionDiv = document.querySelector(`[data-question="${index}"]`).closest('.question');
+                const explanationDiv = document.createElement('div');
+                explanationDiv.style.cssText = 'background: #f0f8ff; padding: 10px; margin-top: 10px; border-radius: 5px; border-left: 4px solid #2196f3;';
+                explanationDiv.innerHTML = `<strong>Penjelasan:</strong> ${q.explanation}`;
+                questionDiv.appendChild(explanationDiv);
+            });
+            
+            // Show score
+            document.getElementById('score').textContent = score;
+            document.getElementById('scoreDisplay').style.display = 'block';
+            document.getElementById('submitQuiz').style.display = 'none';
+            document.getElementById('resetBtn').style.display = 'inline-block';
+        }
+
+        function resetQuiz() {
+            // Remove all styling and explanations
+            document.querySelectorAll('.options li').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+                option.onclick = function() {
+                    const questionIndex = parseInt(this.dataset.question);
+                    const optionIndex = parseInt(this.dataset.option);
+                    selectAnswer(questionIndex, optionIndex);
+                };
+            });
+            
+            // Remove explanations
+            document.querySelectorAll('.question div[style*="background: #f0f8ff"]').forEach(exp => {
+                exp.remove();
+            });
+            
+            // Reset quiz state
+            quizAnswers = {};
+            document.getElementById('submitQuiz').style.display = 'block';
+            document.getElementById('scoreDisplay').style.display = 'none';
+            document.getElementById('resetBtn').style.display = 'none';
+        }
+    </script>
+</body>
+</html></div>
